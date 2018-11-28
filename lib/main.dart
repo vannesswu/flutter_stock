@@ -97,44 +97,51 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
         height: 100,
         padding: EdgeInsets.only(top: 8, bottom: 8),
-        child: ListTile(
-          leading: Container(
-              decoration: BoxDecoration(
-                  color: stock.getStatusColor(), shape: BoxShape.circle),
-              width: 80,
-              height: 80,
-              child: Center(child: Text(stock.name))),
-          title:
-              Text("承銷價 " + stock.actualSellPrice, textAlign: TextAlign.left),
-          trailing: FutureBuilder(
-              future: Future.delayed(
-                      Duration(milliseconds: int.parse(stock.id) * 50))
-                  .then((_) => stock.getProfit()),
-              builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.active:
-                  case ConnectionState.waiting:
-                    return Text('fetching...', textAlign: TextAlign.left);
-                  case ConnectionState.done:
-                    return Container(
-                      decoration: BoxDecoration(
-                          color: snapshot.data > 0
-                              ? Colors.redAccent
-                              : Colors.greenAccent),
-                      width: 70,
-                      child: Text(
-                        '價差 ' +
-                            (snapshot.data == 0.0
-                                ? '-'
-                                : snapshot.data.toString()),
-                        textAlign: TextAlign.left,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                }
-              }),
-        ));
+        child: FutureBuilder(
+            future:
+                Future.delayed(Duration(milliseconds: int.parse(stock.id) * 50))
+                    .then((_) => stock.getStockPrice()),
+            builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.active:
+                case ConnectionState.waiting:
+                  return Text('fetching...', textAlign: TextAlign.left);
+                case ConnectionState.done:
+                  var profit = snapshot.data - (double.parse(stock.actualSellPrice) ?? 0.0);
+                  return ListTile(
+                      leading: Container(
+                          decoration: BoxDecoration(
+                              color: stock.getStatusColor(),
+                              shape: BoxShape.circle),
+                          width: 80,
+                          height: 80,
+                          child: Center(child: Text(stock.name))),
+                      title: Text("承銷價 " + stock.actualSellPrice,
+                          textAlign: TextAlign.left),
+                      subtitle: Text("現價 " + snapshot.data.toString(),
+                          textAlign: TextAlign.left),
+                      trailing: Container(
+                        decoration: BoxDecoration(
+                            color: profit > 0
+                                ? Colors.redAccent
+                                : Colors.greenAccent),
+                        width: 80,
+                        height: 30,
+                        child: Center(
+                          child: Text(
+                            '價差 ' +
+                                (snapshot.data == 0.0
+                                    ? '-'
+                                    : (snapshot.data - double.parse(stock.actualSellPrice)).toStringAsFixed(2)),
+                            textAlign: TextAlign.left,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ));
+              }
+            }));
   }
 }
 
@@ -231,7 +238,7 @@ class StockDto {
     }
   }
 
-  Future<double> getProfit() async {
+  Future<double> getStockPrice() async {
     var stockCurrentPriceUrl =
         'https://histock.tw/stock/module/stockdata.aspx?no=' + this.number;
 
@@ -248,13 +255,10 @@ class StockDto {
     );
 
     var tt = regExp.allMatches(data).toList().last.group(0).replaceAll(',', '');
-    var currentPrice = double.parse(tt);
-    var profit = currentPrice - double.parse(this.actualSellPrice);
+    var currentPrice = double.parse(tt) ?? 0.0;
+    var fixedPrice = double.parse(currentPrice.toStringAsFixed(2)) ?? 0.0;
 
-    if (profit > 1000) {
-      return Future.value(0.0);
-    }
-    return Future.value(double.parse(profit.toStringAsFixed(2)) ?? 0.0);
+    return fixedPrice > 3000 ? 0.0 : fixedPrice;
   }
 }
 
