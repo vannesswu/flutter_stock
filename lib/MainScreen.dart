@@ -20,11 +20,15 @@ class MainScreen extends StatelessWidget {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             centerTitle: false,
-            title: Text(title, style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700),),
+            title: Text(
+              title,
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700),
+            ),
             actions: <Widget>[
               Container(
                 margin: EdgeInsets.only(right: 15),
-                decoration: BoxDecoration(color: Colors.grey[900], shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                    color: Colors.grey[900], shape: BoxShape.circle),
                 child: IconButton(
                   icon: Icon(Icons.tune),
                   onPressed: () {},
@@ -37,7 +41,9 @@ class MainScreen extends StatelessWidget {
               child: Column(
             children: <Widget>[
               Container(
-                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[900]))),
+                decoration: BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: Colors.grey[900]))),
                 padding: EdgeInsets.all(15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,10 +84,12 @@ class MainScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: ListView(
-                    children: appState.stockList
-                        .map((stock) => buildStockCard(stock))
-                        .toList()),
+                child: ListView.builder(
+                  itemCount: appState.stockList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return buildStockCard(appState.stockList[index]);
+                  },
+                ),
               ),
             ],
           ))),
@@ -89,17 +97,15 @@ class MainScreen extends StatelessWidget {
   }
 
   Widget buildStockCard(StockDto stock) {
-
     return Container(
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[900]))),
+      decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey[900]))),
       margin: EdgeInsets.only(left: 15, right: 15),
       padding: EdgeInsets.only(top: 15, bottom: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Expanded(
-              flex: 12,
-              child: _buildStockNameRowItem(stock)),
+          Expanded(flex: 12, child: _buildStockNameRowItem(stock)),
           Expanded(
             flex: 10,
             child: Text(
@@ -125,9 +131,11 @@ class MainScreen extends StatelessWidget {
             child: Container(
               width: 68,
               height: 42,
-              decoration: BoxDecoration(color: appState.getPriceBackgroundColor(stock), borderRadius: BorderRadius.all(Radius.circular(5))),
+              decoration: BoxDecoration(
+                  color: appState.getPriceBackgroundColor(stock),
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
               child: Center(
-                child: Text(appState.getPriceOfStock(stock),
+                child: Text((appState.getProfit(stock)),
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,

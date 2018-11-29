@@ -3,8 +3,10 @@ import 'package:flutter_stock/MainScreen.dart';
 import 'package:flutter_stock/customTheme.dart';
 import 'package:flutter_stock/state_container.dart';
 
-void main(){
-  runApp(StateContainer(child: MyApp(),));
+void main() {
+  runApp(StateContainer(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -12,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: '股票申購',
       theme: ThemeData(
         primarySwatch: CustomTheme.black,

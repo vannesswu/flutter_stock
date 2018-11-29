@@ -23,18 +23,25 @@ class AppState {
   }
 
   String getPriceOfStock(StockDto stock) {
-    return ((priceByStock[stock] == null)
-        ? "fetching"
+    return ((priceByStock[stock] == null || priceByStock[stock] == 0)
+        ? "-"
         : priceByStock[stock].toString());
+  }
+
+  String getProfit(StockDto stock) {
+    var tt = getPriceOfStock(stock);
+
+    return tt == "-"
+        ? tt
+        : (double.parse(tt) - double.parse(stock.actualSellPrice))
+            .toStringAsFixed(2);
   }
 
   Color getPriceBackgroundColor(StockDto stock) {
     return (priceByStock[stock] ??
-        0.0 - (double.parse(stock.actualSellPrice) ?? 0.0)) >
-        0
+                0.0 - (double.parse(stock.actualSellPrice) ?? 0.0)) >
+            0
         ? Colors.red[700]
         : Colors.green[600];
   }
 }
-
-

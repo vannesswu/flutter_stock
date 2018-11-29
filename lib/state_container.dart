@@ -46,6 +46,7 @@ class StateContainerState extends State<StateContainer> {
 
   void getPurchasableStockList() {
     StockService.instance.getPurchasableStockList().then((stockList) {
+      print("QQ");
       setState(() {
         state.stockList = stockList;
         state.isLoading = false;
@@ -61,7 +62,7 @@ class StateContainerState extends State<StateContainer> {
   void refreshStockPrice(StockDto stock) {
     Future.delayed(Duration(milliseconds: 50 * int.parse(stock.id))).then((it) {
       StockService.instance.getStockPrice(stock).then((price) {
-        setState(() => state.priceByStock[stock] = price );
+        setState(() => state.priceByStock[stock] = price);
       });
     });
   }
