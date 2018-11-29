@@ -85,11 +85,11 @@ class StockDto {
   Color getStatusColor() {
     switch (this.getStockStatus()) {
       case StockStatus.notStart:
-        return Colors.greenAccent;
+        return Colors.amber[800];
       case StockStatus.expired:
-        return Colors.grey;
+        return Colors.grey[600];
       case StockStatus.selling:
-        return Colors.deepOrangeAccent;
+        return Colors.blueAccent[400];
       default:
         return Colors.black;
     }

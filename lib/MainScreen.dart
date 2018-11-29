@@ -13,59 +13,164 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     appState = StateContainer.of(context).state;
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: SafeArea(
-            child: ListView(
-                children: appState.stockList
-                    .map((stock) => buildCell(stock))
-                    .toList())));
+
+    return Container(
+      margin: EdgeInsets.only(top: 60),
+      child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            centerTitle: false,
+            title: Text(title, style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700),),
+            actions: <Widget>[
+              Container(
+                margin: EdgeInsets.only(right: 15),
+                decoration: BoxDecoration(color: Colors.grey[900], shape: BoxShape.circle),
+                child: IconButton(
+                  icon: Icon(Icons.tune),
+                  onPressed: () {},
+                  //color: Colors.black,
+                ),
+              )
+            ],
+          ),
+          body: SafeArea(
+              child: Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[900]))),
+                padding: EdgeInsets.all(15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 12,
+                      child: Text("股票代號",
+                          style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                              letterSpacing: 0.01)),
+                    ),
+                    Expanded(
+                      flex: 10,
+                      child: Text("承銷價",
+                          style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                              letterSpacing: 0.01)),
+                    ),
+                    Expanded(
+                      flex: 10,
+                      child: Text("參考市價",
+                          style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                              letterSpacing: 0.01)),
+                    ),
+                    Expanded(
+                      flex: 10,
+                      child: Text("溢價差",
+                          style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                              letterSpacing: 0.01)),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                    children: appState.stockList
+                        .map((stock) => buildStockCard(stock))
+                        .toList()),
+              ),
+            ],
+          ))),
+    );
   }
 
-  Widget buildCell(StockDto stock) {
+  Widget buildStockCard(StockDto stock) {
+
     return Container(
-        height: 100,
-        padding: EdgeInsets.only(top: 8, bottom: 8),
-        child: Container(
-            child: ListTile(
-                leading: Container(
-                    decoration: BoxDecoration(
-                        color: stock.getStatusColor(), shape: BoxShape.circle),
-                    width: 80,
-                    height: 80,
-                    child: Center(child: Text(stock.name))),
-                title: Text("承銷價 " + stock.actualSellPrice,
-                    textAlign: TextAlign.left),
-                subtitle: Text(
-                    "現價 " + ((appState.priceByStock[stock] == null)
-                        ? "fetching"
-                        : appState.priceByStock[stock].toString()),
-                    textAlign: TextAlign.left),
-                trailing: Container(
-                  decoration: BoxDecoration(
-                      color: (appState.priceByStock[stock] ??
-                                  0.0 -
-                                      (double.parse(stock.actualSellPrice) ??
-                                          0.0)) >
-                              0
-                          ? Colors.redAccent
-                          : Colors.greenAccent),
-                  width: 80,
-                  height: 30,
-                  child: Center(
-                    child: Text(
-                      '價差 ' +
-                          (appState.priceByStock[stock] == 0.0
-                              ? '-'
-                              : ((appState.priceByStock[stock] ?? 0.0) -
-                                      double.parse(stock.actualSellPrice))
-                                  .toStringAsFixed(2)),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ))));
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[900]))),
+      margin: EdgeInsets.only(left: 15, right: 15),
+      padding: EdgeInsets.only(top: 15, bottom: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+              flex: 12,
+              child: _buildStockNameRowItem(stock)),
+          Expanded(
+            flex: 10,
+            child: Text(
+              stock.actualSellPrice,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  letterSpacing: 0.02,
+                  fontWeight: FontWeight.w300),
+            ),
+          ),
+          Expanded(
+            flex: 10,
+            child: Text(appState.getPriceOfStock(stock),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    letterSpacing: 0.02,
+                    fontWeight: FontWeight.w300)),
+          ),
+          Expanded(
+            flex: 10,
+            child: Container(
+              width: 68,
+              height: 42,
+              decoration: BoxDecoration(color: appState.getPriceBackgroundColor(stock), borderRadius: BorderRadius.all(Radius.circular(5))),
+              child: Center(
+                child: Text(appState.getPriceOfStock(stock),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        letterSpacing: 0.02,
+                        fontWeight: FontWeight.w400)),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStockNameRowItem(StockDto stock) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          stock.number,
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              letterSpacing: 0.02,
+              fontWeight: FontWeight.w500),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              stock.name,
+              style: TextStyle(
+                  color: Colors.grey[600], fontSize: 14, letterSpacing: 0.01),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 5),
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: stock.getStatusColor()),
+            )
+          ],
+        )
+      ],
+    );
   }
 }
