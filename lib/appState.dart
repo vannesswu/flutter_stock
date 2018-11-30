@@ -38,9 +38,9 @@ class AppState {
   }
 
   Color getPriceBackgroundColor(StockDto stock) {
-    return (priceByStock[stock] ??
-                0.0 - (double.parse(stock.actualSellPrice) ?? 0.0)) >
-            0
+    return (((priceByStock[stock] ?? 0.0) -
+                (double.parse(stock.actualSellPrice) ?? 0.0)) >
+            0)
         ? Colors.red[700]
         : Colors.green[600];
   }

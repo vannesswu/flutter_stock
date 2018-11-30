@@ -47,12 +47,13 @@ class StateContainerState extends State<StateContainer> {
   void getPurchasableStockList() {
     StockService.instance.getPurchasableStockList().then((stockList) {
       setState(() {
-        state.stockList = stockList..sort((aStock, bStock){
-          var aStockStatus = aStock.getStockStatus();
-          var bStockStatus = bStock.getStockStatus();
+        state.stockList = stockList
+          ..sort((aStock, bStock) {
+            var aStockStatus = aStock.getStockStatus();
+            var bStockStatus = bStock.getStockStatus();
 
-          return bStockStatus.index.compareTo(aStockStatus.index);
-        });
+            return bStockStatus.index.compareTo(aStockStatus.index);
+          });
         state.isLoading = false;
       });
       stockList.forEach(refreshStockPrice);
