@@ -19,6 +19,7 @@ class MainScreen extends StatelessWidget {
       child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
+            brightness: Brightness.dark,
             centerTitle: false,
             title: Text(
               title,

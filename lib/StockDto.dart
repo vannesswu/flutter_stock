@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum StockStatus { notStart, selling, expired }
+enum StockStatus { expired , notStart, selling  }
 
 class StockDto {
   final String id;
