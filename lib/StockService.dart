@@ -43,4 +43,41 @@ class StockService {
 
     return fixedPrice > 3000 ? 0.0 : fixedPrice;
   }
+
+  final stockDailyPriceUrl =
+      'http://www.tse.com.tw/exchangeReport/STOCK_DAY';
+
+  Future<List<double>> getStockDailyPrice(StockDto stock) async {
+    final preYear = ((DateTime.now().month - 1) < 1)
+        ? DateTime.now().year - 1
+        : DateTime.now().year;
+    
+    final preMonth = ((DateTime.now().month - 1) < 1)
+        ? 12
+        : (DateTime.now().month - 1).toString().padLeft(2, '0');
+
+    final previousYMD = '$preYear${preMonth}01';
+    final currentYMD =
+        '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}01';
+
+    final client = http.Client();
+
+    final preQueryString = '?response=json&date=$previousYMD&stockNo=${stock.number}';
+    final currentQueryString = '?response=json&date=$currentYMD&stockNo=${stock.number}';
+
+    final preRes = client.get(stockDailyPriceUrl + preQueryString);
+    final curRes = client.get(stockDailyPriceUrl + currentQueryString);
+
+    final futures = await Future.wait([
+      preRes,
+      curRes
+    ]);
+
+    final preData = JSON.jsonDecode(futures[0].body)['data'] as List<dynamic>;
+    final curData = JSON.jsonDecode(futures[1].body)['data'] as List<dynamic> ?? [];
+
+    var preDailyPrice = preData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
+    var curDailyPrice = curData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
+    return (preDailyPrice + curDailyPrice).reversed.take(20).toList().reversed.toList();
+  }
 }
