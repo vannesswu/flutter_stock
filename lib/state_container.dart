@@ -40,7 +40,6 @@ class StateContainerState extends State<StateContainer> {
     }
 
     getPurchasableStockList();
-
     super.initState();
   }
 
@@ -57,11 +56,22 @@ class StateContainerState extends State<StateContainer> {
         state.isLoading = false;
       });
       stockList.forEach(refreshStockPrice);
+      //stockList.forEach(getStockDailyPrice);
     }).catchError((err) {
       setState(() {
         state.isLoading = false;
       });
     });
+  }
+
+  Future<List<double>> getStockDailyPrice(StockDto stock) async {
+    if (state.dailyPriceByStock[stock] == null) {
+      var prices = await StockService.instance.getStockDailyPrice(stock);
+      state.dailyPriceByStock[stock] = prices;
+      return prices;
+    } else {
+      return state.dailyPriceByStock[stock];
+    }
   }
 
   void refreshStockPrice(StockDto stock) {
@@ -100,5 +110,7 @@ class _InheritedStateContainer extends InheritedWidget {
   // root Widget, when we make changes we also know we want to rebuild Widgets
   // that depend on the StateContainer.
   @override
-  bool updateShouldNotify(_InheritedStateContainer old) => true;
+  bool updateShouldNotify(_InheritedStateContainer old) {
+    return old.data.widget.state != data.state;
+  }
 }

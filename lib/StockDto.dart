@@ -99,9 +99,11 @@ class StockDto {
 
   String getROI(double currentPrice) {
     final actualSellPriceNumber = double.parse(actualSellPrice) ?? 0;
-    return (((currentPrice - actualSellPriceNumber) / actualSellPriceNumber) *
-            100)
-        .toStringAsFixed(2);
+    return ((((currentPrice ?? 0) - actualSellPriceNumber) /
+                    actualSellPriceNumber) *
+                100)
+            .toStringAsFixed(2) ??
+        "-";
   }
 
   String convertNA(String content) {

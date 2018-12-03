@@ -45,39 +45,44 @@ class StockService {
   }
 
   final stockDailyPriceUrl =
-      'http://www.tse.com.tw/exchangeReport/STOCK_DAY';
+      'http://www.tse.com.tw/exchangeReport/STOCK_DAY_AVG';
 
   Future<List<double>> getStockDailyPrice(StockDto stock) async {
-    final preYear = ((DateTime.now().month - 1) < 1)
-        ? DateTime.now().year - 1
-        : DateTime.now().year;
-    
-    final preMonth = ((DateTime.now().month - 1) < 1)
+    var date = DateTime.now();
+    final preYear = ((date.month - 1) < 1) ? date.year - 1 : date.year;
+
+    final preMonth = ((date.month - 1) < 1)
         ? 12
-        : (DateTime.now().month - 1).toString().padLeft(2, '0');
+        : (date.month - 1).toString().padLeft(2, '0');
 
     final previousYMD = '$preYear${preMonth}01';
-    final currentYMD =
-        '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}01';
+    final currentYMD = '${date.year}${date.month.toString().padLeft(2, '0')}01';
 
     final client = http.Client();
 
-    final preQueryString = '?response=json&date=$previousYMD&stockNo=${stock.number}';
-    final currentQueryString = '?response=json&date=$currentYMD&stockNo=${stock.number}';
+    final preQueryString =
+        '?response=json&date=$previousYMD&stockNo=${stock.number}&_=${date.millisecondsSinceEpoch}';
+    final currentQueryString =
+        '?response=json&date=$currentYMD&stockNo=${stock.number}&_=${date.millisecondsSinceEpoch}';
 
-    final preRes = client.get(stockDailyPriceUrl + preQueryString);
-    final curRes = client.get(stockDailyPriceUrl + currentQueryString);
+    final preRes = await client.get(stockDailyPriceUrl + preQueryString);
+//    await Future.delayed(Duration(seconds: 5));
+//    final curRes = await client.get(stockDailyPriceUrl + currentQueryString);
+    final curRes = [];
+//
+//    final futures = await Future.wait([
+//      preRes,
+//      curRes
+//    ]);
 
-    final futures = await Future.wait([
-      preRes,
-      curRes
-    ]);
+    final preData = JSON.jsonDecode(preRes.body)['data'] as List<dynamic> ?? [];
+//    final curData = JSON.jsonDecode(curRes.body)['data'] as List<dynamic> ?? [];
 
-    final preData = JSON.jsonDecode(futures[0].body)['data'] as List<dynamic>;
-    final curData = JSON.jsonDecode(futures[1].body)['data'] as List<dynamic> ?? [];
-
-    var preDailyPrice = preData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
-    var curDailyPrice = curData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
-    return (preDailyPrice + curDailyPrice).reversed.take(20).toList().reversed.toList();
+    var preDailyPrice = preData
+        .map((it) => double.parse((it as List<dynamic>)[1]))
+        .toList()
+          ..removeLast();
+//    var curDailyPrice = curData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
+    return (preDailyPrice).reversed.take(20).toList().reversed.toList();
   }
 }

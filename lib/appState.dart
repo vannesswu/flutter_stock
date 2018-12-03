@@ -3,11 +3,13 @@ import 'package:flutter_stock/StockDto.dart';
 
 class AppState {
   Map<StockDto, double> priceByStock;
+  Map<StockDto, List<double>> dailyPriceByStock;
   List<StockDto> stockList;
   bool isLoading;
 
   AppState({
     this.priceByStock = const {},
+    this.dailyPriceByStock = const {},
     this.stockList = const [],
     this.isLoading = false,
   });
@@ -15,10 +17,12 @@ class AppState {
   factory AppState.builder(
       {Map<StockDto, double> priceByStock,
       List<StockDto> stockList,
+      Map<StockDto, List<double>> dailyPriceByStock,
       bool isLoading}) {
     return AppState(
         priceByStock: priceByStock ?? {},
         stockList: stockList ?? [],
+        dailyPriceByStock: dailyPriceByStock ?? {},
         isLoading: isLoading ?? false);
   }
 
