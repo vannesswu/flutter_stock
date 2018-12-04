@@ -58,31 +58,35 @@ class StockService {
     final previousYMD = '$preYear${preMonth}01';
     final currentYMD = '${date.year}${date.month.toString().padLeft(2, '0')}01';
 
-    final client = http.Client();
-
     final preQueryString =
         '?response=json&date=$previousYMD&stockNo=${stock.number}&_=${date.millisecondsSinceEpoch}';
     final currentQueryString =
         '?response=json&date=$currentYMD&stockNo=${stock.number}&_=${date.millisecondsSinceEpoch}';
 
-    final preRes = await client.get(stockDailyPriceUrl + preQueryString);
-//    await Future.delayed(Duration(seconds: 5));
-//    final curRes = await client.get(stockDailyPriceUrl + currentQueryString);
-    final curRes = [];
-//
-//    final futures = await Future.wait([
-//      preRes,
-//      curRes
-//    ]);
+    final preMonthPriceList = await _getStockMonthPriceList(preQueryString);
+    await Future.delayed(Duration(milliseconds: 200));
+    final curMonthPriceList = await _getStockMonthPriceList(currentQueryString);
 
-    final preData = JSON.jsonDecode(preRes.body)['data'] as List<dynamic> ?? [];
-//    final curData = JSON.jsonDecode(curRes.body)['data'] as List<dynamic> ?? [];
+    return (preMonthPriceList + curMonthPriceList)
+        .reversed
+        .take(20)
+        .toList()
+        .reversed
+        .toList();
+  }
 
-    var preDailyPrice = preData
+  Future<List<double>> _getStockMonthPriceList(String query) async {
+    final client = http.Client();
+
+    final response = await client.get(stockDailyPriceUrl + query);
+
+    final data = JSON.jsonDecode(response.body)['data'] as List<dynamic> ?? [];
+
+    var dailyPrice = data
         .map((it) => double.parse((it as List<dynamic>)[1]))
         .toList()
           ..removeLast();
-//    var curDailyPrice = curData.map((it)=> double.parse((it as List<dynamic>)[6])).toList();
-    return (preDailyPrice).reversed.take(20).toList().reversed.toList();
+
+    return dailyPrice;
   }
 }
