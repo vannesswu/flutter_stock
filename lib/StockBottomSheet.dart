@@ -40,18 +40,19 @@ class StockBottomSheet extends StatelessWidget {
           children: <Widget>[
             _buildIndicator(),
             _buildBottomSheetStockBar(stock),
-            _buildTrendCharts(stock),
+            _buildTrendRow(stock),
             Table(
               children: [
                 TableRow(children: [
                   _buildBottomSheetTableCell(
-                      title: '溢價差',
-                      content: appState.getProfit(stock),
+                      title: '獲利',
+                      content: appState.totalGain(stock),
                       style: TextStyle(
                           color: appState.getPriceBackgroundColor(stock),
                           fontSize: 24,
                           letterSpacing: 0.02,
-                          fontWeight: FontWeight.w800)),
+                          fontWeight: FontWeight.w800),
+                      topPadding: 0),
                   _buildBottomSheetTableCell(
                       title: '承銷價',
                       content: stock.actualSellPrice,
@@ -59,7 +60,8 @@ class StockBottomSheet extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 24,
                           letterSpacing: 0.02,
-                          fontWeight: FontWeight.w800)),
+                          fontWeight: FontWeight.w800),
+                      topPadding: 0),
                   _buildBottomSheetTableCell(
                       title: '市價',
                       content: appState.getPriceOfStock(stock),
@@ -67,7 +69,8 @@ class StockBottomSheet extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 24,
                           letterSpacing: 0.02,
-                          fontWeight: FontWeight.w800)),
+                          fontWeight: FontWeight.w800),
+                      topPadding: 0),
                 ]),
                 TableRow(children: [
                   _buildBottomSheetTableCell(
@@ -111,10 +114,11 @@ class StockBottomSheet extends StatelessWidget {
           color: Colors.white,
           fontSize: 18,
           letterSpacing: 0.02,
-          fontWeight: FontWeight.w600)}) {
+          fontWeight: FontWeight.w600),
+      double topPadding = 20}) {
     return TableCell(
         child: Padding(
-      padding: const EdgeInsets.only(top: 21),
+      padding: EdgeInsets.only(top: topPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -184,6 +188,34 @@ class StockBottomSheet extends StatelessWidget {
     );
   }
 
+  Widget _buildTrendRow(StockDto stock) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "股價趨勢",
+                style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    letterSpacing: 0.01,
+                    fontWeight: FontWeight.normal),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: _buildTrendCharts(stock),
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
   Widget _buildTrendCharts(StockDto stock) {
     return FutureBuilder(
         future: container.getStockDailyPrice(stock),
@@ -212,14 +244,20 @@ class StockBottomSheet extends StatelessWidget {
                 )
               ];
 
-              var chart = charts.LineChart(series, animate: true);
+              var chart = charts.LineChart(
+                series,
+                animate: true,
+                primaryMeasureAxis: charts.NumericAxisSpec(
+                  tickProviderSpec:
+                      charts.BasicNumericTickProviderSpec(zeroBound: false),
+                ),
+                domainAxis: new charts.NumericAxisSpec(
+                  showAxisLine: false,
+                  renderSpec: new charts.NoneRenderSpec(),
+                ),
+              );
 
-              return Center(
-                  child: new SizedBox(
-                width: 240,
-                height: 30.0,
-                child: chart,
-              ));
+              return Container(height: 80, child: chart);
           }
         }));
   }

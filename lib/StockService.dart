@@ -66,13 +66,7 @@ class StockService {
     final preMonthPriceList = await _getStockMonthPriceList(preQueryString);
     await Future.delayed(Duration(milliseconds: 200));
     final curMonthPriceList = await _getStockMonthPriceList(currentQueryString);
-
-    return (preMonthPriceList + curMonthPriceList)
-        .reversed
-        .take(20)
-        .toList()
-        .reversed
-        .toList();
+    return (preMonthPriceList + curMonthPriceList);
   }
 
   Future<List<double>> _getStockMonthPriceList(String query) async {

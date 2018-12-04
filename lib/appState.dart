@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/StockDto.dart';
+import 'package:intl/intl.dart';
 
 class AppState {
   Map<StockDto, double> priceByStock;
@@ -33,12 +34,23 @@ class AppState {
   }
 
   String getProfit(StockDto stock) {
-    var tt = getPriceOfStock(stock);
+    var price = getPriceOfStock(stock);
 
-    return tt == "-"
-        ? tt
-        : (double.parse(tt) - double.parse(stock.actualSellPrice))
+    return price == "-"
+        ? price
+        : (double.parse(price) - double.parse(stock.actualSellPrice))
             .toStringAsFixed(2);
+  }
+
+  String totalGain(StockDto stock) {
+    var price = getPriceOfStock(stock);
+    final formatter = NumberFormat("#,###");
+    return price == "-"
+        ? price
+        : formatter.format(
+            (double.parse(price) - double.parse(stock.actualSellPrice)) *
+                double.parse(stock.canBuyNumber) *
+                1000);
   }
 
   Color getPriceBackgroundColor(StockDto stock) {
