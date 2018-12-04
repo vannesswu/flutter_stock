@@ -4,6 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/StockBottomSheet.dart';
 import 'package:flutter_stock/StockDto.dart';
 import 'package:flutter_stock/StockService.dart';
 import 'package:flutter_stock/appState.dart';
@@ -16,9 +17,9 @@ class StateContainer extends StatefulWidget {
   StateContainer(
       {@required this.child, this.service = const StockService(), this.state});
 
-  static StateContainerState of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(_InheritedStateContainer)
-            as _InheritedStateContainer)
+  static StateContainerState of(BuildContext context, Aspect aspect) {
+    return InheritedModel.inheritFrom<_InheritedStateContainer>(context,
+            aspect: aspect)
         .data;
   }
 
@@ -96,8 +97,9 @@ class StateContainerState extends State<StateContainer> {
   }
 }
 
-class _InheritedStateContainer extends InheritedWidget {
+class _InheritedStateContainer extends InheritedModel<Aspect> {
   final StateContainerState data;
+  static Map<StockDto, double> tempPriceByStock = {};
 
   _InheritedStateContainer({
     Key key,
@@ -113,4 +115,28 @@ class _InheritedStateContainer extends InheritedWidget {
   bool updateShouldNotify(_InheritedStateContainer old) {
     return old.data.widget.state != data.state;
   }
+
+  @override
+  bool updateShouldNotifyDependent(
+      InheritedModel<Aspect> oldWidget, Set<Aspect> dependencies) {
+    if (dependencies.map((it) => it.name).contains(StockBottomSheet.aspect)) {
+      final stock = dependencies.firstWhere((it) {
+        return it.name == StockBottomSheet.aspect;
+      }).stockDto;
+
+      final isUpdate = (data.state.priceByStock[stock] != null &&
+          _InheritedStateContainer.tempPriceByStock[stock] == null);
+      _InheritedStateContainer.tempPriceByStock =
+          Map.from(data.state.priceByStock);
+      return isUpdate;
+    }
+    return true;
+  }
+}
+
+class Aspect {
+  final String name;
+  final StockDto stockDto;
+
+  Aspect({@required this.name, this.stockDto});
 }

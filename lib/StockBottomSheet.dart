@@ -10,6 +10,7 @@ class StockBottomSheet extends StatelessWidget {
   final StockDto stock;
   static var instance;
   final stockService = StockService.instance;
+  static const aspect = "StockBottomSheet";
   AppState appState;
 
   StateContainerState container;
@@ -26,8 +27,9 @@ class StockBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    appState = StateContainer.of(context).state;
-    container = StateContainer.of(context);
+    container = StateContainer.of(
+        context, Aspect(name: StockBottomSheet.aspect, stockDto: stock));
+    appState = container.state;
     return _buildBottomSheet(stock);
   }
 

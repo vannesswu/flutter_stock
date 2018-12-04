@@ -9,11 +9,13 @@ class MainScreen extends StatelessWidget {
   MainScreen({Key key, this.title}) : super(key: key);
   final String title;
   final stockService = StockService.instance;
+  static const aspect = "MainScreen";
   AppState appState;
 
   @override
   Widget build(BuildContext context) {
-    appState = StateContainer.of(context).state;
+    appState =
+        StateContainer.of(context, Aspect(name: MainScreen.aspect)).state;
     return Container(
       margin: EdgeInsets.only(top: 60),
       child: Scaffold(
