@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/PrefsService.dart';
 import 'package:flutter_stock/StockDto.dart';
 import 'package:intl/intl.dart';
 
@@ -7,24 +8,27 @@ class AppState {
   Map<StockDto, List<double>> dailyPriceByStock;
   List<StockDto> stockList;
   bool isLoading;
-
+  UserSetting userSetting;
   AppState({
     this.priceByStock = const {},
     this.dailyPriceByStock = const {},
     this.stockList = const [],
     this.isLoading = false,
+    this.userSetting = const UserSetting()
   });
 
   factory AppState.builder(
       {Map<StockDto, double> priceByStock,
       List<StockDto> stockList,
       Map<StockDto, List<double>> dailyPriceByStock,
-      bool isLoading}) {
+      bool isLoading, UserSetting userSetting}) {
     return AppState(
         priceByStock: priceByStock ?? {},
         stockList: stockList ?? [],
         dailyPriceByStock: dailyPriceByStock ?? {},
-        isLoading: isLoading ?? false);
+        isLoading: isLoading ?? false,
+        userSetting: userSetting ?? const UserSetting(),
+    );
   }
 
   String getPriceOfStock(StockDto stock) {

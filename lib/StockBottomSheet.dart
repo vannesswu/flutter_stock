@@ -229,7 +229,11 @@ class StockBottomSheet extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               );
             case ConnectionState.waiting:
-              return Text('waiting', style: TextStyle(color: Colors.white));
+              return Container(
+                  height: 80,
+                  child: Center(
+                      child: Text('waiting',
+                          style: TextStyle(color: Colors.white))));
             case ConnectionState.none:
               return Text('none', style: TextStyle(color: Colors.white));
             case ConnectionState.done:

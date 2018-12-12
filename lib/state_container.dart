@@ -4,6 +4,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/PrefsService.dart';
+import 'package:flutter_stock/SettingScreen.dart';
 import 'package:flutter_stock/StockBottomSheet.dart';
 import 'package:flutter_stock/StockDto.dart';
 import 'package:flutter_stock/StockService.dart';
@@ -39,7 +41,9 @@ class StateContainerState extends State<StateContainer> {
     } else {
       state = AppState.builder(isLoading: true);
     }
-
+    PrefsService.instance.initialize().then((it) {
+      getUserSetting();
+    });
     getPurchasableStockList();
     super.initState();
   }
@@ -65,6 +69,14 @@ class StateContainerState extends State<StateContainer> {
     });
   }
 
+  Future<void> getUserSetting() async {
+    var userSetting = await PrefsService.instance.getUserSetting();
+
+    setState(() {
+      state.userSetting = userSetting;
+    });
+  }
+
   Future<List<double>> getStockDailyPrice(StockDto stock) async {
     if (state.dailyPriceByStock[stock] == null) {
       var prices = await StockService.instance.getStockDailyPrice(stock);
@@ -73,6 +85,21 @@ class StateContainerState extends State<StateContainer> {
     } else {
       return state.dailyPriceByStock[stock];
     }
+  }
+
+  resetUserSetting() {
+    setState(() {
+      state.userSetting = UserSetting(isHiddenExpireStock: false);
+    });
+  }
+
+  setSwitch(bool isHiddenExpireStock) {
+    setState(() {
+      state.userSetting = UserSetting(
+          sellingPriceLessThan: state.userSetting.sellingPriceLessThan,
+          profitGreatThan: state.userSetting.profitGreatThan,
+          isHiddenExpireStock: isHiddenExpireStock);
+    });
   }
 
   void refreshStockPrice(StockDto stock) {
@@ -129,7 +156,12 @@ class _InheritedStateContainer extends InheritedModel<Aspect> {
       _InheritedStateContainer.tempPriceByStock =
           Map.from(data.state.priceByStock);
       return isUpdate;
+    } else if (dependencies
+        .map((it) => it.name)
+        .contains(SettingScreen.aspect)) {
+      return true;
     }
+
     return true;
   }
 }
@@ -139,4 +171,5 @@ class Aspect {
   final StockDto stockDto;
 
   Aspect({@required this.name, this.stockDto});
+
 }

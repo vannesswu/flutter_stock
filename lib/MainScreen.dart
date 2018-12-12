@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/SettingScreen.dart';
 import 'package:flutter_stock/StockBottomSheet.dart';
 import 'package:flutter_stock/StockDto.dart';
 import 'package:flutter_stock/StockService.dart';
@@ -33,7 +34,12 @@ class MainScreen extends StatelessWidget {
                     color: Colors.grey[900], shape: BoxShape.circle),
                 child: IconButton(
                   icon: Icon(Icons.tune),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingScreen()),
+                    );
+                  },
                   //color: Colors.black,
                 ),
               )
