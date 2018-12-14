@@ -9,25 +9,26 @@ class AppState {
   List<StockDto> stockList;
   bool isLoading;
   UserSetting userSetting;
-  AppState({
-    this.priceByStock = const {},
-    this.dailyPriceByStock = const {},
-    this.stockList = const [],
-    this.isLoading = false,
-    this.userSetting = const UserSetting()
-  });
+
+  AppState(
+      {this.priceByStock = const {},
+      this.dailyPriceByStock = const {},
+      this.stockList = const [],
+      this.isLoading = false,
+      this.userSetting = const UserSetting()});
 
   factory AppState.builder(
       {Map<StockDto, double> priceByStock,
       List<StockDto> stockList,
       Map<StockDto, List<double>> dailyPriceByStock,
-      bool isLoading, UserSetting userSetting}) {
+      bool isLoading,
+      UserSetting userSetting}) {
     return AppState(
-        priceByStock: priceByStock ?? {},
-        stockList: stockList ?? [],
-        dailyPriceByStock: dailyPriceByStock ?? {},
-        isLoading: isLoading ?? false,
-        userSetting: userSetting ?? const UserSetting(),
+      priceByStock: priceByStock ?? {},
+      stockList: stockList ?? [],
+      dailyPriceByStock: dailyPriceByStock ?? {},
+      isLoading: isLoading ?? false,
+      userSetting: userSetting ?? const UserSetting(),
     );
   }
 
@@ -63,5 +64,35 @@ class AppState {
             0)
         ? Colors.red[700]
         : Colors.green[600];
+  }
+
+  List<StockDto> get filterStockList {
+    var list = List<StockDto>.from(stockList);
+
+    if ((userSetting.isHiddenExpireStock ?? false)) {
+      list = list.where((stock) {
+        return stock.getStockStatus() != StockStatus.expired;
+      }).toList();
+    }
+
+    if (userSetting.sellingPriceLessThan != null) {
+      list = list.where((stock) {
+        return double.parse(stock.actualSellPrice) <
+            userSetting.sellingPriceLessThan;
+      }).toList();
+    }
+
+    if (userSetting.profitGreatThan != null) {
+      list = list.where((stock) {
+        final profit = getProfit(stock);
+
+        if (profit == "-") {
+          return false;
+        } else {
+          return double.parse(profit) > userSetting.profitGreatThan;
+        }
+      }).toList();
+    }
+    return list;
   }
 }

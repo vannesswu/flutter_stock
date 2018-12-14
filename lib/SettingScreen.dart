@@ -13,6 +13,8 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
+    final sizeBoxHeight = mediaQuery.size.height - 530;
     container = StateContainer.of(context, Aspect(name: SettingScreen.aspect));
     appState = container.state;
     _sellPriceTextEditingController = TextEditingController(
@@ -26,8 +28,8 @@ class SettingScreen extends StatelessWidget {
 
     ExpireStockSwitch expireStockSwitch = new ExpireStockSwitch(
         onValueChange, appState.userSetting.isHiddenExpireStock ?? false);
-    print(appState.userSetting.isHiddenExpireStock);
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Color(0xFF141414),
@@ -46,127 +48,134 @@ class SettingScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.only(left: 15, right: 15, top: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 22),
-              child: Text(
-                '篩選條件',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              ),
-            ),
-            Divider(height: 2, color: Colors.grey[900]),
-            ListTile(
-              contentPadding: EdgeInsets.only(top: 21, bottom: 21),
-              title: Text('承銷價小於',
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: ListView(
+            padding: mediaQuery.viewInsets,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 22),
+                child: Text(
+                  '篩選條件',
                   style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.grey[400])),
-              trailing: Container(
-                width: 60,
-                child: TextField(
-                  keyboardType: TextInputType.numberWithOptions(),
-                  decoration: InputDecoration(
-                      hintText: "未設定",
-                      hintStyle:
-                          TextStyle(fontSize: 16, color: Colors.grey[600])),
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.grey[400]),
-                  controller: _sellPriceTextEditingController,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white),
                 ),
               ),
-            ),
-            Divider(height: 2, color: Colors.grey[900]),
-            ListTile(
-              contentPadding: EdgeInsets.only(top: 21, bottom: 21),
-              title: Text('獲利大於',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.grey[400])),
-              trailing: Container(
-                width: 60,
-                child: TextField(
-                  keyboardType: TextInputType.numberWithOptions(),
-                  decoration: InputDecoration(
-                      hintText: "未設定",
-                      hintStyle:
-                          TextStyle(fontSize: 16, color: Colors.grey[600])),
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.grey[400]),
-                  controller: _profitTextEditingController,
+              Divider(height: 2, color: Colors.grey[900]),
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                title: Text('承銷價小於',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[400])),
+                trailing: Container(
+                  width: 60,
+                  child: TextField(
+                    keyboardType: TextInputType.numberWithOptions(),
+                    decoration: InputDecoration(
+                        hintText: "未設定",
+                        hintStyle:
+                            TextStyle(fontSize: 16, color: Colors.grey[600])),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[400]),
+                    controller: _sellPriceTextEditingController,
+                  ),
                 ),
               ),
-            ),
-            Divider(height: 2, color: Colors.grey[900]),
-            ListTile(
-              contentPadding: EdgeInsets.only(top: 21, bottom: 21),
-              title: Text('隱藏截止申購',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.grey[400])),
-              trailing: Container(
-                width: 60,
-                child: expireStockSwitch,
+              Divider(height: 2, color: Colors.grey[900]),
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                title: Text('獲利大於',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[400])),
+                trailing: Container(
+                  width: 60,
+                  child: TextField(
+                    keyboardType: TextInputType.numberWithOptions(),
+                    decoration: InputDecoration(
+                        hintText: "未設定",
+                        hintStyle:
+                            TextStyle(fontSize: 16, color: Colors.grey[600])),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[400]),
+                    controller: _profitTextEditingController,
+                  ),
+                ),
               ),
-            ),
-            Expanded(
-              child: Container(),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 50),
-              height: 52,
-              decoration: BoxDecoration(
-                  color: Color(0xFF141414),
-                  borderRadius: BorderRadius.circular(10)),
-              child: FlatButton(
-                  onPressed: () {
-                    PrefsService.instance
-                        .setUserSetting(
-                      sellingPriceLessThan:
-                          double.tryParse(_sellPriceTextEditingController.text),
-                      profitGreatThan:
-                          double.tryParse(_profitTextEditingController.text),
-                      isHiddenExpireStock: appState.userSetting.isHiddenExpireStock,
-                    ).then((it) {
-                      return container.getUserSetting();
-                    }).then((it) {
-                       Navigator.pop(context);
-                    });
-                  },
-                  child: Center(
-                    child: Text(
-                      '儲存設定',
-                      style: TextStyle(
-                        color: Colors.amber[800],
-                        fontSize: 18,
+              Divider(height: 2, color: Colors.grey[900]),
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                title: Text('隱藏截止申購',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[400])),
+                trailing: Container(
+                  width: 60,
+                  child: expireStockSwitch,
+                ),
+              ),
+              SizedBox(
+                height: sizeBoxHeight,
+                child: Container(),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 50),
+                height: 52,
+                decoration: BoxDecoration(
+                    color: Color(0xFF141414),
+                    borderRadius: BorderRadius.circular(10)),
+                child: FlatButton(
+                    onPressed: () {
+                      PrefsService.instance
+                          .setUserSetting(
+                        sellingPriceLessThan:
+                            double.tryParse(_sellPriceTextEditingController.text),
+                        profitGreatThan:
+                            double.tryParse(_profitTextEditingController.text),
+                        isHiddenExpireStock:
+                            appState.userSetting.isHiddenExpireStock,
+                      )
+                          .then((it) {
+                        return container.getUserSetting();
+                      }).then((it) {
+                        Navigator.pop(context);
+                      });
+                    },
+                    child: Center(
+                      child: Text(
+                        '儲存設定',
+                        style: TextStyle(
+                          color: Colors.amber[800],
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                  )),
-            )
-          ],
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-  _resetUserSetting(ExpireStockSwitch eSwitch){
+
+  _resetUserSetting(ExpireStockSwitch eSwitch) {
     eSwitch.setValue(false);
     container.resetUserSetting();
   }
+
   onValueChange(bool isHidden) {
-    print(isHidden);
     container.setSwitch(isHidden);
   }
 }
@@ -174,8 +183,9 @@ class SettingScreen extends StatelessWidget {
 class ExpireStockSwitch extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   bool _isHiddenExpireStock;
+
   ExpireStockSwitch(this.onChanged, this._isHiddenExpireStock);
-  
+
   @override
   Widget build(BuildContext context) {
     return CupertinoSwitch(
@@ -184,8 +194,9 @@ class ExpireStockSwitch extends StatelessWidget {
           setValue(isHidden);
         });
   }
+
   void setValue(bool value) {
-      _isHiddenExpireStock = value;
-      onChanged(value);
-    }
+    _isHiddenExpireStock = value;
+    onChanged(value);
   }
+}

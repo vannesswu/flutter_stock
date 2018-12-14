@@ -65,9 +65,9 @@ class MainScreen extends StatelessWidget {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: appState.stockList.length,
+                  itemCount: appState.filterStockList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _buildStockCard(context, appState.stockList[index]);
+                    return _buildStockCard(context, appState.filterStockList[index]);
                   },
                 ),
               ),
