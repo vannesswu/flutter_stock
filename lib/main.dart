@@ -17,6 +17,12 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
         .copyWith(statusBarIconBrightness: Brightness.light));
     return MaterialApp(
+      builder: (context, child) {
+        return MediaQuery(
+          child: child,
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        );
+      },
       debugShowCheckedModeBanner: false,
       title: '股票申購',
       theme: ThemeData(
