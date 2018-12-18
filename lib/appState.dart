@@ -89,7 +89,10 @@ class AppState {
         if (profit == "-") {
           return false;
         } else {
-          return double.parse(profit) > userSetting.profitGreatThan;
+          return double.parse(profit) *
+                  double.parse(stock.canBuyNumber) *
+                  1000 >
+              userSetting.profitGreatThan;
         }
       }).toList();
     }

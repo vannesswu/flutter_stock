@@ -24,9 +24,9 @@ class SettingScreen extends StatelessWidget {
         ? ""
         : appState.userSetting.sellingPriceLessThan.toString();
 
-    _profit ??= appState.userSetting.sellingPriceLessThan == null
+    _profit ??= appState.userSetting.profitGreatThan == null
         ? ""
-        : appState.userSetting.sellingPriceLessThan.toString();
+        : appState.userSetting.profitGreatThan.toStringAsFixed(0);
 
     _sellPriceTextEditingController = TextEditingController(text: _sellPrice);
     _profitTextEditingController = TextEditingController(text: _profit);
@@ -197,6 +197,7 @@ class SettingScreen extends StatelessWidget {
   }
 
   _resetUserSetting(ExpireStockSwitch eSwitch) {
+    _clearTextField();
     eSwitch.setValue(false);
     container.resetUserSetting();
   }

@@ -25,10 +25,16 @@ class PrefsService {
     }
   }
 
-  T _getValue<T>(String key){
+  resetUserSetting() async {
+    await _pref.setDouble('sellingPriceLessThan', null);
+    await _pref.setDouble('profitGreatThan', null);
+    await _pref.setBool('isHiddenExpireStock', null);
+  }
+
+  T _getValue<T>(String key) {
     try {
       return _pref.get(key) as T;
-    } catch(error) {
+    } catch (error) {
       return null;
     }
   }
@@ -37,8 +43,6 @@ class PrefsService {
     final sellingPriceLessThan = _getValue<double>("sellingPriceLessThan");
     final profitGreatThan = _getValue<double>("profitGreatThan");
     final isHiddenExpireStock = _getValue<bool>("isHiddenExpireStock");
-
-
 
     return UserSetting(
         sellingPriceLessThan: sellingPriceLessThan,

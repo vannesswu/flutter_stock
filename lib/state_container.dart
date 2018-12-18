@@ -90,6 +90,7 @@ class StateContainerState extends State<StateContainer> {
   resetUserSetting() {
     setState(() {
       state.userSetting = UserSetting(isHiddenExpireStock: false);
+      PrefsService.instance.resetUserSetting();
     });
   }
 
@@ -171,5 +172,4 @@ class Aspect {
   final StockDto stockDto;
 
   Aspect({@required this.name, this.stockDto});
-
 }
